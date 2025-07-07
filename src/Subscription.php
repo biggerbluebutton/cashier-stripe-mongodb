@@ -20,9 +20,6 @@ use Laravel\Cashier\Exceptions\SubscriptionUpdateFailure;
 use LogicException;
 use Stripe\Subscription as StripeSubscription;
 
-/**
- * @property \Laravel\Cashier\Billable|\Illuminate\Database\Eloquent\Model $owner
- */
 class Subscription extends Model
 {
     use AllowsCoupons;
