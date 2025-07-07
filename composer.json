@@ -56,8 +56,12 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Laravel\\Cashier\\Tests\\": "tests/"
+            "Laravel\\Cashier\\Tests\\": "tests/",
+            "Laravel\\Cashier\\": "src/"
         }
+    },
+    "replace": {
+        "laravel/cashier": "self.version"
     },
     "extra": {
         "branch-alias": {
