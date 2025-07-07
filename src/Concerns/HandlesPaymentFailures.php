@@ -4,7 +4,7 @@ namespace Laravel\Cashier\Concerns;
 
 use Laravel\Cashier\Exceptions\IncompletePayment;
 use Laravel\Cashier\Payment;
-use Laravel\Cashier\Subscription;
+//use Laravel\Cashier\Subscription;
 use Stripe\Exception\CardException as StripeCardException;
 use Stripe\PaymentMethod as StripePaymentMethod;
 
@@ -35,7 +35,7 @@ trait HandlesPaymentFailures
      *
      * @internal
      */
-    public function handlePaymentFailure(Subscription $subscription, $paymentMethod = null)
+    public function handlePaymentFailure($subscription, $paymentMethod = null)
     {
         if ($this->confirmIncompletePayment && $subscription->hasIncompletePayment()) {
             try {
