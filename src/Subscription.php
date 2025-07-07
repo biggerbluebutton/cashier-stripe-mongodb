@@ -6,7 +6,6 @@ use Carbon\Carbon;
 use Carbon\CarbonInterface;
 use DateTimeInterface;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Laravel\Cashier\Cashier;
 use Laravel\Cashier\Concerns\CastModelOnSave;
 use MongoDB\Laravel\Eloquent\Model;
 use Illuminate\Support\Collection;
