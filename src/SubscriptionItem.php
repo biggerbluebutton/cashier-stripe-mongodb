@@ -4,22 +4,21 @@ namespace Laravel\Cashier;
 
 use DateTimeInterface;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
+use Laravel\Cashier\Concerns\CastModelOnSave;
 use Laravel\Cashier\Concerns\HandlesPaymentFailures;
 use Laravel\Cashier\Concerns\InteractsWithPaymentBehavior;
 use Laravel\Cashier\Concerns\Prorates;
 use Laravel\Cashier\Database\Factories\SubscriptionItemFactory;
+use MongoDB\Laravel\Eloquent\Model;
 
-/**
- * @property \Laravel\Cashier\Subscription|null $subscription
- */
 class SubscriptionItem extends Model
 {
     use HandlesPaymentFailures;
     use HasFactory;
     use InteractsWithPaymentBehavior;
     use Prorates;
+    use CastModelOnSave;
 
     /**
      * The attributes that are not mass assignable.
@@ -33,8 +32,24 @@ class SubscriptionItem extends Model
      *
      * @var array
      */
+    protected $fillable = [
+        'subscription_id' ,
+        'stripe_id'       ,
+        'stripe_product'  ,
+        'stripe_price'    ,
+        'quantity'        ,
+        'created_at'      ,
+        'updated_at'      ,
+    ];
+
     protected $casts = [
-        'quantity' => 'integer',
+        'subscription_id' => 'string',
+        'stripe_id'       => 'string',
+        'stripe_product'  => 'string',
+        'stripe_price'    => 'string',
+        'quantity'        => 'integer',
+        'created_at'      => 'datetime',
+        'updated_at'      => 'datetime',
     ];
 
     /**

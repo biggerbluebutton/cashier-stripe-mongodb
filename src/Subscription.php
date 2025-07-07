@@ -6,7 +6,9 @@ use Carbon\Carbon;
 use Carbon\CarbonInterface;
 use DateTimeInterface;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
+use Laravel\Cashier\Cashier;
+use Laravel\Cashier\Concerns\CastModelOnSave;
+use MongoDB\Laravel\Eloquent\Model;
 use Illuminate\Support\Collection;
 use InvalidArgumentException;
 use Laravel\Cashier\Concerns\AllowsCoupons;
@@ -29,6 +31,7 @@ class Subscription extends Model
     use HasFactory;
     use InteractsWithPaymentBehavior;
     use Prorates;
+    use CastModelOnSave;
 
     /**
      * The attributes that are not mass assignable.
@@ -49,10 +52,31 @@ class Subscription extends Model
      *
      * @var array
      */
+
+    protected $fillable = [
+        'user_id'       ,
+        'type'          ,
+        'stripe_id'     ,
+        'stripe_status' ,
+        'stripe_price'  ,
+        'quantity'      ,
+        'trial_ends_at' ,
+        'ends_at'       ,
+        'created_at'    ,
+        'updated_at'    ,
+    ];
+
     protected $casts = [
-        'ends_at' => 'datetime',
-        'quantity' => 'integer',
+        'user_id'       => 'string',
+        'type'          => 'string',
+        'stripe_id'     => 'string',
+        'stripe_status' => 'string',
+        'stripe_price'  => 'string',
+        'quantity'      => 'integer',
         'trial_ends_at' => 'datetime',
+        'ends_at'       => 'datetime',
+        'created_at'    => 'datetime',
+        'updated_at'    => 'datetime',
     ];
 
     /**
@@ -697,7 +721,6 @@ class Subscription extends Model
             $this->stripe_id, $this->getSwapOptions($items, $options)
         );
 
-        /** @var \Stripe\SubscriptionItem $firstItem */
         $firstItem = $stripeSubscription->items->first();
         $isSinglePrice = $stripeSubscription->items->count() === 1;
 
@@ -788,7 +811,6 @@ class Subscription extends Model
      */
     protected function mergeItemsThatShouldBeDeletedDuringSwap(Collection $items)
     {
-        /** @var \Stripe\SubscriptionItem $stripeSubscriptionItem */
         foreach ($this->asStripeSubscription()->items->data as $stripeSubscriptionItem) {
             $price = $stripeSubscriptionItem->price;
 
@@ -834,8 +856,8 @@ class Subscription extends Model
         }
 
         $payload['trial_end'] = $this->onTrial()
-                        ? $this->trial_ends_at->getTimestamp()
-                        : 'now';
+            ? $this->trial_ends_at->getTimestamp()
+            : 'now';
 
         return $payload;
     }
@@ -1289,7 +1311,7 @@ class Subscription extends Model
 
         if ($invoice = $subscription->latest_invoice) {
             return $invoice->payment_intent
-                ? new Payment($invoice->payment_intent)
+                ? new \Laravel\Cashier\Payment($invoice->payment_intent)
                 : null;
         }
     }
@@ -1368,7 +1390,6 @@ class Subscription extends Model
      * Update the underlying Stripe subscription information for the model.
      *
      * @param  array  $options
-     * @return \Stripe\Subscription
      */
     public function updateStripeSubscription(array $options = [])
     {
@@ -1381,7 +1402,6 @@ class Subscription extends Model
      * Get the subscription as a Stripe subscription object.
      *
      * @param  array  $expand
-     * @return \Stripe\Subscription
      */
     public function asStripeSubscription(array $expand = [])
     {
